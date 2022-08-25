@@ -1,8 +1,10 @@
 # Grafico_ocorrencia_aerea.
 
+![example](https://user-images.githubusercontent.com/87736256/186779112-408a3839-575b-4d62-861e-8a4a5f10607e.gif)
+
 A simple Flask and chart.js project to allow visualization of the Brazillian airfoce data in chart form.
 
-#How it works.
+# How it works.
 
 This project is divided in 3 smaller projects.
 
@@ -12,12 +14,12 @@ This project is divided in 3 smaller projects.
 
 The project comes with an preconfigured postgres docker-compose file that you can you use to run the project.
 
-#What you will need to run this project.
+# What you will need to run this project.
 
 - Python.
 - Posgtresql.
 
-#How to run.
+# How to run.
 
 First either run the docker-compose file comes with the project or create your one local postgres server.
 
@@ -35,14 +37,16 @@ Lastly go to the chart folder installs its requeriments and run app.py.
 if you did everything correctly you should be able to go to: http://localhost:5005/
 and build a chart with the tables of your choice.
 
-#Objective
+# Objective
 
 I wanted to try building a more modular project that relied on an API to achieve its main goal, in this project the api is the thing that feeds the info tho the chart giving more security to the databse as the user never interacts with the database directly, also the rest of the project is made of other smaller projects meaning that if i ever want to do a huge change on some parts of the project only that part needs to be edit, the rest of the project can stay the same.
 
 I used an older project of mine back when i was learning pandas where i used this exact same dataset to construct some simple charts with matplotlib as inspiration for this one, this time around i wanted to allow the user to create a chart of their one.
 
-#Future Goals.
+# Future Goals.
 
-**Project Structer:** I want all the parts of the project to run of its one container but i still want to add some features that will still need some changes in parts of the code so i will do that after implementing them
+**Project Structure:** 
+I want all the parts of the project to run of its one container but i still want to add some features that will still need some changes in parts of the code so i will do that after implementing them
 
-**Features:** In the project that used for inspiration for this one i had a chart that showed the months with the most amount of accidents in an given state, althout i already have an idea of how to implement this i still want to try improving the code befored adding-it. 
+**Features:** 
+In the project that used for inspiration for this one i had a chart that showed the months with the most amount of accidents in an given state, althout i already have an idea of how to implement this i still want to try improving the code befored adding-it. 

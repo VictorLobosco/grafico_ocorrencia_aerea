@@ -2,7 +2,7 @@
 
 ![example](https://user-images.githubusercontent.com/87736256/186779112-408a3839-575b-4d62-861e-8a4a5f10607e.gif)
 
-A simple Flask and chart.js project to allow visualization of the Brazillian airfoce data in chart form.
+A simple Flask and chart.js project to allow visualization of the Brazilian airfoce data in chart form.
 
 # How it works.
 

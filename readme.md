@@ -27,7 +27,7 @@ if you are using the docker database you should not have any problems running th
 
 if you created your one, go to both the db folder and the api folder and change the adress of the server to the one you are using, you can also change the schema to the one you want to use.
 
-After you got the server up and running go to the db folder and install the dependences needed for the project by running pip install requirements.txt,
+After you got the server up and running go to the db folder and install the dependences needed for the project by running pip install -r requirements.txt,
 after that run the main.py file, once you run it pandas will attempt to read the tables on the server, since you dont have them the project will download the dataset and create them, if you want to check for updates on the dataset all you need to do is run the file again and it will update the database with the new info.
 
 Once you have the database populated go to the api folder and install its requirements like you did with db and run app.py.

@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-A3rJD856KowSb7dwlZdYEkO39Gagi7vIsF0jrRAoQmDKKtQBHUuLZ9AsSv4jD4Xa" crossorigin="anonymous"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
+    <title>Chart</title>
+</head>
+<style>
+    :root{
+    --sdv:4%;
+}
+.checkbox-wrapper {
+    height: 13px;
+    width: 13px;
+}
+
+    </style>
+<body>
+                <!-- Warning Message handler -->
+                <div class="modal fade" tabindex="-1" id="WarningMessage" aria-labelledby="WarningMessageModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="WarningMessageModalLabel"></h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p id="WarningMessageCode"></p>
+                            <!-- <br>   -->
+                            <p id="WarningMessageText"></p>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                            </div>
+                        </div>
+                        </div>
+                    <div class="container-lg">
+                        <div class="row">
+                            <div class="col">
+                                <select name="table" id="table" class="form-select form-select-sm">
+                                    <option value="">-- Select --</option>       
+                                </select>
+                            </div>
+                                <br>
+                            <div class="col">
+                                <select name="column" id="column" class="form-select form-select-sm">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                            
+                
+
+                            <div class="col-1">
+                                <button name="generate" id="generate" class="btn btn-info btn-sm text-wrap">
+                                    Create</button>
+                                <button name="complex" id="complex" class="btn btn-info btn-sm text-wrap" data-bs-toggle="modal" data-bs-target="#complexModal">Count</button>
+
+                            </div>
+
+                            <div class="col-2 form-check" id="sortable">
+                                <input class="form-check-input" type="checkbox" value="" id="sort_data" />
+                                <label class="form-check-label" for="sort_data" id="sort_data_text">Sort data</label>
+                            </div>
+
+                        </div>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-sm-8">
+                                    <canvas id="myChart" width="2" height="2"></canvas>
+                            </div>
+                            </div>
+                        </div>
+
+                    </div>
+                <!-- complex modal -->
+                <div class="modal fade" id="complexModal" tabindex="-1" aria-labelledby="complexModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="complexModalLabel">COUNT OPERATION</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            SELECT FROM [THIS WILL BE USED FOT THE COUNT OPERATION]
+                            <div class="row">
+                                <div class="col">
+                                    <select name="c_table" id="c_table" class="form-select form-select-sm">
+                                        <option value="">-- Select --</option>       
+                                    </select>
+                                </div>
+                                    .
+                                <div class="col">
+                                    <select name="c_column" id="c_column" class="form-select form-select-sm">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                            WHERE
+                            <div class="row">
+                                <div class="col">
+                                    <select name="c_table_where" id="c_table_where" class="form-select form-select-sm">
+                                        <option value="">-- Select --</option>       
+                                    </select>
+                                </div>
+                                    .
+                                <div class="col">
+                                    <select name="c_column_where" id="c_column_where" class="form-select form-select-sm">
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                            
+                            =
+                            <div class="row">
+                                <div class="col">
+                                    <input type="text" class="form-control" id="c_equal_to">
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="button" name="create_complex" id="create_complex" class="btn btn-primary" data-bs-dismiss="modal">Create chart</button>
+                            </div>
+                        </div>
+
+                        
+
+                          
+
+<script>
+var option = '';
+var db_structure;
+var select_options;
+
+//Holds ajax results so wnother query is not needed.
+function holds_value(x){
+
+    return x;
+}
+    //populates the select fields.
+    $.ajax({
+    method: "GET",
+    url: "http://localhost:8000/v1/data/query/structure/",
+    dataType:"json",
+    success: function(json_data){
+        db_structure =holds_value(json_data);
+        //loop that generate the options of the select based on the values returned by the api
+        for(const [key,value] of Object.entries(json_data)){ 
+        option += '<option value="'+ `  ${key} `+ '">' + `  ${key} ` + '</option>';
+        }
+        $('#table').append(option);
+        select_options =holds_value(option);
+
+    }})
+    //function that fill the column select based on the selected table.
+    $('#table').change(function(){  
+            //this variable will hold the values that will be added to the select.
+            var ooption = '';
+            //Variable that hold the selected table name
+            var selectedOption = String($(this).children("option:selected").val())
+            //Variable with the same text as selectedOption but with the empty blank space removed.
+            var res = selectedOption.replace(/\s+/g, "");
+            //loop that generate the options of the select based on the values returned by the api
+            for(var i=0;i<db_structure[res].length;i++){ 
+            ooption += '<option value="'+ `  ${db_structure[res][parseInt(i)]} `+ '">' + `  ${db_structure[res][parseInt(i)]} ` + '</option>';
+             }
+            $('#column')
+            .empty()
+            .append(ooption);
+    })
+    //set default value for the select to stop user from trying to send blank values.                
+    $('#complex').click(function(){
+        if ($('#c_table').children().length == 1 ){
+            $('#c_table')
+            .empty()
+            .append(select_options)
+            .val('  aeronave ')
+            .trigger('change');
+        }
+        if ($('#c_table_where').children().length == 1 ){
+            $('#c_table_where')
+            .empty()
+            .append(select_options)
+            .val('  ocorrencia ')
+            .trigger('change');
+        }
+    })
+    //function that fill the column select based on the selected table inside of the complex modal.
+    $('#c_table').change(function(){
+            var coption = '';
+         
+            //Variable that hold the selected table name
+            var selectedOption = String($(this).children("option:selected").val())
+            //Variable with the same text as selectedOption but with the empty blank space removed.
+            var res = selectedOption.replace(/\s+/g, "");
+            //loop that generate the options of the select based on the values returned by the api
+            for(var i=0;i<db_structure[res].length;i++){ 
+                coption += '<option value="'+ `  ${db_structure[res][parseInt(i)]} `+ '">' + `  ${db_structure[res][parseInt(i)]} ` + '</option>';
+             }
+            $('#c_column')
+            .empty()
+            .append(coption);
+            
+
+
+            //Variable that hold the selected table name
+            var selectedOptionTextTablewhere =  String($("#c_table_where option:selected").val());
+            //Variable with the same text as selectedOptionTextTablewhere but with the empty blank space removed.
+            var currentTableWhere = selectedOptionTextTablewhere.replace(/\s+/g, "");
+
+
+
+            //Checks to see if currentTableWhere is not empty if its not its then checks who is ocorrencia, if c_table is not ocorrencia then c_table_where should be, the check on c_table is made to make sure that the user is not making an query with both options on the ocorrencia tablel.
+            if (currentTableWhere !== "" && currentTableWhere !== 'ocorrencia' && res !== 'ocorrencia'){
+                $("#c_table_where")
+                .val('  ocorrencia ')
+                .trigger('change');
+            }
+    })
+
+    $('#c_table_where').change(function(){
+            var wcoption = '';
+            
+            //Variable that hold the selected table name
+            var selectedOptionWhere = String($(this).children("option:selected").val())
+            //Variable with the same text as selectedOptionWhere but with the empty blank space removed.
+            var resW = selectedOptionWhere.replace(/\s+/g, "");
+            //loop that generate the options of the select based on the values returned by the api
+            for(var i=0;i<db_structure[resW].length;i++){ 
+             wcoption += '<option value="'+ `  ${db_structure[resW][parseInt(i)]} `+ '">' + `  ${db_structure[resW][parseInt(i)]} ` + '</option>';
+             }
+                $('#c_column_where')
+                .empty()
+                .append(wcoption);
+
+
+                //Variable that hold the selected table name 
+                var selectedOptionTextTable =  String($("#c_table option:selected").val());
+                //Variable with the same text as selectedOptionTextTable but with the empty blank space removed.
+                var currentTable = selectedOptionTextTable.replace(/\s+/g, "");
+
+                //Checks who is ocorrencia, if c_table_where is not ocorrencia then c_table should be, the check on c_table is made to make sure that the user is not making an query with both options on the ocorrencia table.
+                if (resW !== 'ocorrencia' && currentTable !== 'ocorrencia'){
+                        $("#c_table")
+                        .val('  ocorrencia ')
+                        .trigger('change');
+                    }
+    })
+    
+    //Handles generating a simple chart using only one table.
+    $('#generate').click(function(e){
+        e.preventDefault();
+
+        //Values that will be sent as parameters to the api.
+        var selectedTable = String($('#table').children("option:selected").val())
+        var selectedColumn = String($('#column').children("option:selected").val())
+        var selectedTable = selectedTable.replace(/\s+/g, "");
+        var selectedColumn = selectedColumn.replace(/\s+/g, "");
+        var sorted_checked = 0
+        if ($('#sort_data').is(':checked')){
+            sorted_checked = 1
+        }
+        //Stops users from trying to generate a chart without chosing a column.
+        if (selectedColumn.length === 0){
+            $('#WarningMessageModalLabel').text("MISSING VALUE");
+            $('#WarningMessageCode').text(400);
+            $('#WarningMessageText').text('"One or more fields are empty and because of this your request was not sent to the api."');
+            $('#WarningMessage').modal('show')
+        }
+        else {
+            $.ajax({
+            method: "GET",
+            url: "http://localhost:8000/v1/data/query/column/",
+            dataType:"json",
+            data: jQuery.param({ table: selectedTable, column : selectedColumn, sort:sorted_checked}),
+            success: function (json_data) {
+        
+        const chart_exists = Chart.getChart("myChart");
+        function generate_chart(data){
+            const cdata = {
+                datasets: [{
+                        label: 'Total',
+                        data: data,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.2)',
+                            'rgba(54, 162, 235, 0.2)',
+                            'rgba(255, 206, 86, 0.2)',
+                            'rgba(75, 192, 192, 0.2)',
+                            'rgba(153, 102, 255, 0.2)',
+                            'rgba(255, 159, 64, 0.2)'
+                        ],
+                        borderColor: [
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 206, 86, 1)',
+                            'rgba(75, 192, 192, 1)',
+                            'rgba(153, 102, 255, 1)',
+                            'rgba(255, 159, 64, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+            };
+            
+            const config =  {
+                type: 'bar',
+                data: cdata,
+                options: {
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            }
+            const myChart = new Chart(
+                document.getElementById('myChart'),
+                config
+            );
+            return myChart
+        }
+
+         if (chart_exists !== undefined){
+             myChart.destroy()
+         }
+
+        chart_data = json_data
+
+         myChart = generate_chart(chart_data)
+
+
+    },
+    //Handles errors.
+    error: function(xhr, status, error){
+        if (xhr.status === 0) {
+            $('#WarningMessageModalLabel').text("CROSS ORIGIN ERROR");
+            $('#WarningMessageCode').text(401);
+            $('#WarningMessageText').text('"Cross origin problem, this normally happens if you browser is not sending the cross origin signature or becasue the api is offline"');
+        }
+        else{
+            $('#WarningMessageModalLabel').text(error);
+            $('#WarningMessageCode').text(xhr.status);
+            $('#WarningMessageText').text(xhr.responseText);
+        }
+
+
+        $('#WarningMessage').modal('show')
+    }
+            
+
+        })
+        }
+
+    })
+    //Handles generating a complex chart using 2 tables.
+    $('#create_complex').click(function(e){
+        e.preventDefault();
+        //Values that will be sent as parameters to the api.
+        var selectedTable = String($('#c_table').children("option:selected").val())
+        var selectedColumn = String($('#c_column').children("option:selected").val())
+        var selectedTableWhere = String($('#c_table_where').children("option:selected").val())
+        var selectedColumnWhere = String($('#c_column_where').children("option:selected").val())
+        var selectedTable = selectedTable.replace(/\s+/g, "");
+        var selectedColumn = selectedColumn.replace(/\s+/g, "");
+        var selectedTableWhere = selectedTableWhere.replace(/\s+/g, "");
+        var selectedColumnWhere = selectedColumnWhere.replace(/\s+/g, "");
+        var selectEqualTo = String($('#c_equal_to').val())
+        var sorted_checked = 0
+
+        if ($('#sort_data').is(':checked')){
+            sorted_checked = 1
+        }
+        //Stops users from trying to generate a chart without chosing a column.
+        if (selectedColumnWhere.length === 0){
+            $('#WarningMessageModalLabel').text("MISSING VALUE");
+            $('#WarningMessageCode').text(400);
+            $('#WarningMessageText').text('"One or more fields are empty and because of this your request was not sent to the api."');
+            $('#WarningMessage').modal('show')
+        }
+        else
+        {
+            $.ajax({
+                method: "GET",
+                url: "http://localhost:8000/v1/data/query/where/",
+                dataType:"json",
+                //crossDomain
+                data: jQuery.param({ table: selectedTable, column : selectedColumn, tableWhere: selectedTableWhere, columWhere:selectedColumnWhere, equalTo:selectEqualTo, sort:sorted_checked}),
+                success: function (complex_json_data) {
+
+            const chart_exists = Chart.getChart("myChart");
+            function generate_complex_chart(data){
+                const cdata = {
+                    datasets: [{
+                            label: 'Total',
+                            data: data,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                };
+                
+                const config =  {
+                    type: 'bar',
+                    data: cdata,
+                    options: {
+                        scales: {
+                            x: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                }
+                const myChart = new Chart(
+                    document.getElementById('myChart'),
+                    config
+                );
+                return myChart
+            }
+            if (chart_exists !== undefined){
+                myChart.destroy()
+
+            }
+            chart_data = complex_json_data
+            myChart = generate_complex_chart(chart_data)
+
+        },
+        //Handles errors.
+        error: function(xhr, status, error){
+            if (xhr.status === 0) {
+                $('#WarningMessageModalLabel').text("CROSS ORIGIN ERROR");
+                $('#WarningMessageCode').text(401);
+                $('#WarningMessageText').text('"Cross origin problem, this normally happens if you browser is not sending the cross origin signature or becasue the api is offline"');
+            }
+            else
+            {
+                $('#WarningMessageModalLabel').text(error);
+                $('#WarningMessageCode').text(xhr.status);
+                $('#WarningMessageText').text(xhr.responseText);
+            }
+
+            $('#WarningMessage').modal('show')
+            console.log("error")
+        }
+                
+
+            })
+    }
+    })
+    
+    
+</script>    
+</body>
+</html>

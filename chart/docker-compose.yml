@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  chart:
+    build: .
+    ports:
+      - "8005:5000"
+    networks:
+      - ocorrencia
+
+networks:
+  ocorrencia:
+    name: ocorrencia

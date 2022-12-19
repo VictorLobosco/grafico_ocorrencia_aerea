@@ -1,0 +1,19 @@
+FROM python:3
+
+WORKDIR /app
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+RUN mkdir -p /app/templates
+# RUN apk add --no-cache gcc musl-dev linux-headers
+COPY app.py /app/app.py
+COPY /templates/home.html /app/templates/home.html
+COPY requirements.txt requirements.txt
+
+RUN pip install -r requirements.txt
+
+EXPOSE 5005
+
+# COPY . .
+
+CMD ["flask", "run"]

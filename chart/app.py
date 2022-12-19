@@ -1,6 +1,4 @@
-from flask import Flask, jsonify, render_template, request
-from werkzeug.serving import run_simple
-import json
+from flask import Flask, render_template
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -10,9 +8,8 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return render_template('h.html')
+    return render_template('home.html')
 
 
-
-run_simple('localhost', 5005, app, use_reloader=True)
-
+if __name__ == "__main__":
+    app.run(debug=True)

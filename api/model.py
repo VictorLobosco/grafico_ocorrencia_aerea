@@ -6,10 +6,8 @@ from dataclasses import dataclass
 from flask import Flask
 from flask_cors import CORS
 
-from flask_marshmallow import Marshmallow
 
 app = Flask(__name__)
-ma = Marshmallow(app)
 CORS(app)
 
 
@@ -18,11 +16,12 @@ CORS(app)
 
 
 #change this to your postgres db.
-engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5432/postgres', convert_unicode=True)
+engine = create_engine('postgresql+psycopg2://airflow:airflow@postgres:5432/airflow', convert_unicode=True)
+# engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5432/postgres', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,bind= engine))
 
 #change this to the schema of your choice.
-cschema = "ocorrencia_aerea"
+cschema = "ocorrencia"
 metadata = MetaData(schema=cschema)
 
 metadata.reflect(engine, schema=cschema)

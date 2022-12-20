@@ -17,7 +17,7 @@ This project is divided in 3 smaller projects.
 
 if you prefere a video tutorial you can watch one here:
 
-https://www.youtube.com/embed/fYejLcLEQT0
+[<img src="https://i.ytimg.com/vi/fYejLcLEQT0/maxresdefault.jpg" width="50%">](https://www.youtube.com/watch?v=fYejLcLEQT0 "Video Tutorial")
 
 - DB:
 First run docker compose up on the db folder, this will create the airflow containers and the postgres db container, all of them run in the same network named "ocorrencia", its recomended to have the project file extract in the same partition as your OS in a folder that has write permission as airflow creates a log after each run, and if it fails to do that it will not be able to run.
@@ -43,8 +43,13 @@ I am using an Flask API to comunicate between an application and the database to
 And i am using a chart js based solution to display the data and allow for the creation of charts.
 
 # Details.
--- DB:
-This project is mainly centers around using airflow to control the execution of an dag that creates or updates the database, the dag is runned on daily basis and is compose of 4 task:
+
+---------------------
+
+<img src="https://user-images.githubusercontent.com/87736256/208761583-e6ba3b01-0557-4169-8fe1-df228a58dc69.jpeg" width="50%" height="50%" />
+
+
+**DB**: This project is mainly centers around using airflow to control the execution of an dag that creates or updates the database, the dag is runned on daily basis and is compose of 4 task:
 * check_for_update:
     Type: BranchPythonOperator
     Description: First download one of the csvs and creates an MD5 hash of the file and then it compares it to the hash of the last csv used to create or update
@@ -63,7 +68,14 @@ This project is mainly centers around using airflow to control the execution of 
     Type: DummyOperator
     Description: This task is always executed if there no problem on the task before, this only exists to signal the end dag
 
--- API:
+
+---------------------
+
+<img src="https://user-images.githubusercontent.com/87736256/208763923-b9a5fe8b-78c7-40b0-9d56-0253f5d12dc4.png" width="30%" height="30%" />
+
+
+
+**API**:
 Api that handles all the comunication between the database and the user, this is a important part of the project as it allows for a greater mudularity of the project allowing to use the info on the database with data visualization tools other than the one sent with this project.
 -- Endpoints:
 
@@ -81,13 +93,17 @@ Api that handles all the comunication between the database and the user, this is
   Description:  This endpoint return a query based on 2 columns that can be either from the same table or a join between two tables that are filter by the parameters equalTo, you can also chose between the data being order by descending by sending 'sort' = 1 as a parameters
   Example: By sending a query with the parameters 'table' = "aeronave", 'column' = "aeronave_tipo_veiculo", 'tableWhere' = "ocorrencia", 'columWhere' = "ocorrencia_uf" and 'equalTo' = "RJ", you will get the info about the type of vehicles and the amount of them that have being in a air crash in the state of Rio de Janeiro, you can also get this info in a descending order by sending 'sort' = 1.
 
--- Chart:
+---------------------
+
+<img src="https://user-images.githubusercontent.com/87736256/208772226-0cd8f760-bd72-4e91-bb86-15754b66efd4.png" width="50%" height="50%" />
+
+
+**Chart**:
 A basic visualization tool hosted on flask using chart js to allow the creation of a chart based on one or more tables of the database.
+
 -- Endpoints:
 
 * / :
   Description: Main page of the project, all the code runs on this, it creates a chart by using the info return from the api, you can either create a chart with a single table chosing the table and the column and cliking on the generate button, or creating a more complxe chart by clicking on the complex button chosing table and columns and then clicking on the generate button.
-
-
-
-
+  
+ ---------------------

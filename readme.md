@@ -50,21 +50,29 @@ And i am using a chart js based solution to display the data and allow for the c
 
 **DB**: This project is mainly centers around using airflow to control the execution of an dag that creates or updates the database, the dag is runned on daily basis and is compose of 4 task:
 * check_for_update:
+
     Type: BranchPythonOperator
+    
     Description: First download one of the csvs and creates an MD5 hash of the file and then it compares it to the hash of the last csv used to create or update
     the database if the hash is the same it means that there are no updates to the dataset and theres no need to update and the task up_to_date is called, if it is different then is assumed that the db is outdate and then the branch operator changes the task to write_on_db
 * up_to_date:
+
     Type: DummyOperator
+    
     Description: Simple DummyOperator to ilustrate that the db is up to date, after its execution the task done is called.
 
 * writes_db:
+
     Type: PythonOperator
+    
     Description: This is the task that do most of the work of the project it handles downloading cleaning and then uploads the data to a database, it does that by first creating a pandas dataframe with each of the 5 files that compose the dataset and then cleaning up and if its creating the database it proceeds to create a table for each of the files that compose the datase on the database,
     if the code is updating an existing database it then creates a dataframe using each of the tables correlated to its csv counterparts, it then procedes from deleting from dataframe created with the updated dataset all the data belonging to an primary key that is already in the database, this way creating a dataframe that only contains new data, after that thoses dataframes
     are uploaded on the database to its respectives tables.
 
 * done:
+
     Type: DummyOperator
+    
     Description: This task is always executed if there no problem on the task before, this only exists to signal the end dag
 
 
@@ -76,19 +84,26 @@ And i am using a chart js based solution to display the data and allow for the c
 
 **API**:
 Api that handles all the comunication between the database and the user, this is a important part of the project as it allows for a greater mudularity of the project allowing to use the info on the database with data visualization tools other than the one sent with this project.
+
 -- Endpoints:
 
 * /v1/data/query/structure/:
+
   Parameters: None
+  
   Description: Return all the tables and its columns only excluind its keys.
 
 * /v1/data/query/column/: 
+
   Parameters: 'table', 'column', and 'sort'
+  
   Description: Return info from a given colum by sending both the table and column as parameters, you can also chose between the data being order by descending by sending 'sort' = 1 as a parameters.
   Example: By sending a query with the parameters 'table' = "ocorrencia", 'column' = "ocorrencia_uf", you can get the amount of air crash per state in total.
 
 * /v1/data/query/where/:
+
   Parameters: 'table', 'column', 'tableWhere', 'columWhere', 'equalTo' and 'sort'
+  
   Description:  This endpoint return a query based on 2 columns that can be either from the same table or a join between two tables that are filter by the parameters equalTo, you can also chose between the data being order by descending by sending 'sort' = 1 as a parameters
   Example: By sending a query with the parameters 'table' = "aeronave", 'column' = "aeronave_tipo_veiculo", 'tableWhere' = "ocorrencia", 'columWhere' = "ocorrencia_uf" and 'equalTo' = "RJ", you will get the info about the type of vehicles and the amount of them that have being in a air crash in the state of Rio de Janeiro, you can also get this info in a descending order by sending 'sort' = 1.
 
@@ -103,6 +118,7 @@ A basic visualization tool hosted on flask using chart js to allow the creation 
 -- Endpoints:
 
 * / :
+
   Description: Main page of the project, all the code runs on this, it creates a chart by using the info return from the api, you can either create a chart with a single table chosing the table and the column and cliking on the generate button, or creating a more complxe chart by clicking on the complex button chosing table and columns and then clicking on the generate button.
   
  ---------------------
